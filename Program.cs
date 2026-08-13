@@ -1,22 +1,30 @@
-using Swashbuckle.AspNetCore.SwaggerUI;
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuración de servicios
+builder.Services.AddCors(options =>
+{
+	options.AddPolicy("AllowAngular", policy =>
+	{
+		policy.WithOrigins("http://localhost:4200")
+			  .AllowAnyMethod();
+	});
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Pipeline de middleware
 if (app.Environment.IsDevelopment())
 {
 	app.UseSwagger();
-	app.UseSwaggerUI(); // ¡Ya no dará error aquí!
+	app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAngular");
+
 app.UseAuthorization();
 app.MapControllers();
 
